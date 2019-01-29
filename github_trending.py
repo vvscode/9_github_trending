@@ -5,11 +5,12 @@ import requests
 def get_trending_repositories(top_size, period_size=1):
     date_from = date.today() - timedelta(days=period_size)
     repositories = requests.get('https://api.github.com/search/repositories', {
-        'q': 'created:>{}'.format(date_from.isoformat())
+        'q': 'created:>{}'.format(date_from.isoformat()),
+        'sort': 'stars',
+        'order': 'desc',
+        'per_page': top_size
     }).json()['items']
-    repositories.sort(key=lambda item: item['stargazers_count'], reverse=True)
-    top_repositories = repositories[:20]
-    return top_repositories
+    return repositories
 
 
 def get_open_issues_amount(repo_owner, repo_name):
@@ -21,10 +22,10 @@ def get_open_issues_amount(repo_owner, repo_name):
 
 
 if __name__ == '__main__':
-    TOP_SIZE = 20
-    WEEK_DAYS = 7
+    top_size = 20
+    week_days = 7
     try:
-        for repo in get_trending_repositories(TOP_SIZE, period_size=WEEK_DAYS):
+        for repo in get_trending_repositories(top_size, period_size=week_days):
             repo_owner_name = repo['owner']['login']
             repo_name = repo['name']
             issues_count = get_open_issues_amount(repo_owner_name, repo_name)
