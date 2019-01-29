@@ -2,7 +2,7 @@ from datetime import date, timedelta
 import requests
 
 
-def get_trending_repositories(top_size, period_size=7):
+def get_trending_repositories(top_size, period_size=1):
     date_from = date.today() - timedelta(days=period_size)
     repositories = requests.get('https://api.github.com/search/repositories', {
         'q': 'created:>{}'.format(date_from.isoformat())
@@ -21,8 +21,10 @@ def get_open_issues_amount(repo_owner, repo_name):
 
 
 if __name__ == '__main__':
+    TOP_SIZE = 20
+    WEEK_DAYS = 7
     try:
-        for repo in get_trending_repositories(20):
+        for repo in get_trending_repositories(TOP_SIZE, period_size=WEEK_DAYS):
             repo_owner_name = repo['owner']['login']
             repo_name = repo['name']
             issues_count = get_open_issues_amount(repo_owner_name, repo_name)
